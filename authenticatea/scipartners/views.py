@@ -1,10 +1,12 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.forms import UserCreationForm 
-from .models import Project, Message, UserProfile, Notification, Feedback, User, UserProfile, ProjectTag, Skill, Interest
-from .forms import UserProfileForm, ProjectCreationForm, MessageForm, FeedbackForm,PrivacySettingsForm, ProjectTagForm
+from django.contrib.auth.forms import UserCreationForm, PasswordChangeForm, PasswordChangeForm, UserChangeForm,
+from .models import Project, Message, UserProfile, Notification, Feedback, User, UserProfile, ProjectTag, Skill, Interest, UserProjectCollaboration
+from .forms import UserProfileForm, ProjectCreationForm, MessageForm, FeedbackForm,PrivacySettingsForm, ProjectTagForm, ProjectEditForm
 from django.contrib import messages
+from django.contrib.auth import  update_session_auth_hash
+
 
 def login_view(request):
     if request.method == 'POST':
@@ -204,4 +206,53 @@ def search_projects_view(request):
         pass
 
 
+def inbox_view(request):
+    user = request.user
+    user_messages = Message.objects.filter(receiver=user).order_by('-timestamp')
+    return render(request, 'messaging/inbox.html', {'user_messages': user_messages})
+
+def user_settings_view(request):
+    if request.method == 'POST':
+        user_form = UserChangeForm(request.POST, instance=request.user)
+        if user_form.is_valid():
+            user_form.save()
+            update_session_auth_hash(request, request.user)  # Keep user logged in after password change
+            return redirect('user_settings')  # Redirect back to settings page
+    else:
+        user_form = UserChangeForm(instance=request.user)
     
+    return render(request, 'profile/settings.html', {'user_form': user_form})
+
+
+
+@login_required
+def deactivate_account_view(request):
+    if request.method == 'POST':
+        # Handle account deactivation logic here
+        # Optionally, you can ask the user to confirm their password before deactivation
+        return redirect('account_deactivated')  # Redirect to a confirmation page
+    else:
+        return render(request, 'profile/deactivate_account.html')
+    
+@login_required
+def account_deactivated_view(request):
+    return render(request, 'profile/account_deactivated.html')
+
+
+
+def edit_project_view(request, project_id):
+    project = Project.objects.get(id=project_id)
+    
+    if request.user != project.creator:
+        # Implement appropriate permissions and error handling for unauthorized users
+        return redirect('project_details', project_id=project_id)
+    
+    if request.method == 'POST':
+        form = ProjectEditForm(request.POST, instance=project)
+        if form.is_valid():
+            form.save()
+            return redirect('project_details', project_id=project_id)
+    else:
+        form = ProjectEditForm(instance=project)
+    
+    return render(request, 'project/edit.html', {'form': form, 'project': project})
