@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+
+{% block title %}About Scipartners{% endblock %}
+
+{% block content %}
+  <div class="jumbotron">
+    <h1>About Scipartners</h1>
+    <p>Welcome to Scipartners, the open science community!</p>
+  </div>
+
+  <div class="container">
+    <h2>Our Mission</h2>
+    <p>At Scipartners, our mission is to foster collaboration and innovation in the world of open science. We believe that by bringing together researchers, scientists, and enthusiasts from diverse backgrounds, we can accelerate the pace of discovery and make a positive impact on society.</p>
+
+    <h2>Our Team</h2>
+    <p>We are a passionate team of scientists, developers, and designers dedicated to creating a platform that connects individuals with a shared passion for open science. Meet our team members:</p>
+    
+    <ul>
+      <li>John Doe - Co-founder and CEO</li>
+      <li>Jane Smith - Chief Scientist</li>
+      <li>Alice Johnson - Lead Developer</li>
+      <li>Bob Wilson - UX Designer</li>
+    </ul>
+
+    <h2>Contact Us</h2>
+    <p>If you have any questions, feedback, or partnership inquiries, please don't hesitate to contact us:</p>
+    <p>Email: contact@scipartners.com</p>
+    <p>Phone: +1 (123) 456-7890</p>
+
+    <h2>Join Us</h2>
+    <p>Ready to join our open science community? Sign up today and start collaborating on exciting research projects!</p>
+    <a href="{% url 'account_signup' %}" class="btn btn-primary btn-lg">Get Started</a>
+  </div>
+{% endblock %}
