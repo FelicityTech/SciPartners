@@ -3,7 +3,7 @@ from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import UserCreationForm, PasswordChangeForm, PasswordChangeForm, UserChangeForm,
 from .models import Project, Message, UserProfile, Notification, Feedback, User, UserProfile, ProjectTag, Skill, Interest, UserProjectCollaboration
-from .forms import UserProfileForm, ProjectCreationForm, MessageForm, FeedbackForm,PrivacySettingsForm, ProjectTagForm, ProjectEditForm
+from .forms import UserProfileForm, ProjectCreationForm, MessageForm, FeedbackForm,PrivacySettingsForm, ProjectTagForm, ProjectEditForm, UserProjectCollaborationForm
 from django.contrib import messages
 from django.contrib.auth import  update_session_auth_hash
 
@@ -97,9 +97,15 @@ def user_profile_view(request, user_id):
 
 
 
-def project_listing_view(request):
+def list_projects(request):
+    skills = Skill.objects.all()
     projects = Project.objects.all()
-    return render(request, 'project/listing.html', {'projects': projects})
+    
+    selected_skill = request.GET.get('skill')
+    if selected_skill:
+        projects = projects.filter(required_skills__id=selected_skill)
+    
+    return render(request, 'project/list_projects.html', {'projects': projects, 'skills': skills})
 
 def notification_view(request):
     notifications = Notification.objects.filter(user=request.user)
@@ -256,3 +262,88 @@ def edit_project_view(request, project_id):
         form = ProjectEditForm(instance=project)
     
     return render(request, 'project/edit.html', {'form': form, 'project': project})
+
+
+def collaborate_on_project_view(request, project_id):
+    project = Project.objects.get(id=project_id)
+    
+    if request.method == 'POST':
+        form = UserProjectCollaborationForm(request.POST)
+        if form.is_valid():
+            collaboration = form.save(commit=False)
+            collaboration.user = request.user
+            collaboration.project = project
+            collaboration.save()
+            return redirect('project_details', project_id=project_id)
+    else:
+        form = UserProjectCollaborationForm()
+    
+    return render(request, 'project/collaborate.html', {'form': form, 'project': project})
+
+
+
+def deactivate_project_view(request, project_id):
+    project = Project.objects.get(id=project_id)
+    
+    if request.user != project.creator:
+        # Implement appropriate permissions and error handling for unauthorized users
+        return redirect('project_details', project_id=project_id)
+    
+    if request.method == 'POST':
+        # Handle project deactivation logic here
+        # Optionally, ask the project creator for confirmation
+        return redirect('project_deactivated')  # Redirect to a confirmation page
+    else:
+        return render(request, 'project/deactivate.html', {'project': project})
+    
+
+
+@login_required
+def collaborate_on_project_view(request, project_id):
+    project = Project.objects.get(id=project_id)
+    
+    if request.method == 'POST':
+        form = UserProjectCollaborationForm(request.POST)
+        if form.is_valid():
+            collaboration = form.save(commit=False)
+            collaboration.user = request.user
+            collaboration.project = project
+            collaboration.save()
+            return redirect('project_details', project_id=project_id)
+    else:
+        form = UserProjectCollaborationForm()
+    
+    return render(request, 'project/collaborate.html', {'form': form, 'project': project})
+
+
+def deactivate_project_view(request, project_id):
+    project = Project.objects.get(id=project_id)
+    
+    if request.user != project.creator:
+        # Implement appropriate permissions and error handling for unauthorized users
+        return redirect('project_details', project_id=project_id)
+    
+    if request.method == 'POST':
+        # Handle project deactivation logic here
+        # Optionally, ask the project creator for confirmation
+        return redirect('project_deactivated')  # Redirect to a confirmation page
+    else:
+        return render(request, 'project/deactivate.html', {'project': project})
+    
+
+
+@login_required
+def deactivate_account_view(request):
+    if request.method == 'POST':
+        # Verify the user's password for confirmation
+        password_form = PasswordChangeForm(user=request.user, data=request.POST)
+        if password_form.is_valid():
+            # Handle account deactivation logic here
+            # Optionally, you can ask the user for further confirmation
+            return redirect('account_deactivated')  # Redirect to a confirmation page
+    else:
+        password_form = PasswordChangeForm(user=request.user)
+    
+    return render(request, 'profile/deactivate_account.html', {'password_form': password_form})
+
+
