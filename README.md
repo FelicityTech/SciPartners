@@ -10,7 +10,7 @@ Control your privacy settings to choose what information you want to share publi
 Contributors can search and filter projects based on their skills and interests.
 - Skill Matching: Our advanced skill matching system connects contributors with projects that align with their skills and preferences. We use machine learning algorithms to suggest projects to contributors and vice versa, ensuring a seamless match.
 - Communication Tools: Communicate securely within the platform using our private messaging system.
-- Authentication: Choose your preferred authentication method, whether it's Google, Facebook, or email-based registration.
+- Authentication: Choose your preferred authentication method, whether it's Google, Github or email-based registration.
 Enjoy a smooth and secure authentication process.
 - User Reviews and Ratings: Build trust within the community by leaving reviews and ratings based on your collaboration experiences.
 - Notifications: Stay informed with our notification system, which alerts you about new project opportunities, messages, and updates related to your interests.
