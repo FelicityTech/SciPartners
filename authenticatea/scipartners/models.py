@@ -1,4 +1,3 @@
-
 from django.db import models
 from django.contrib.auth.models import User
 
@@ -11,6 +10,7 @@ class Interest(models.Model):
 class UserProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     skills = models.ManyToManyField(Skill)
+    profile_image = models.ImageField(upload_to='profile_images/', blank=True, null=True)
     interests = models.ManyToManyField(Interest)
 
 class Project(models.Model):
@@ -21,7 +21,8 @@ class Project(models.Model):
     interest = models.ForeignKey(Interest, on_delete=models.CASCADE)
     start_date = models.DateField()
     end_date = models.DateField()
-    status = models.CharField(max_length=20)  # You can use choices for status values
+    status = models.CharField(max_length=20)
+
 
 class ProjectTag(models.Model):
     project = models.ForeignKey(Project, on_delete=models.CASCADE)
@@ -45,3 +46,30 @@ class Feedback(models.Model):
     rating = models.IntegerField()
     comment = models.TextField()
     timestamp = models.DateTimeField(auto_now_add=True)
+
+
+
+class UserReview(models.Model):
+    reviewed_user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='reviews_received')
+    reviewer = models.ForeignKey(User, on_delete=models.CASCADE, related_name='reviews_given')
+    rating = models.PositiveIntegerField()
+    comment = models.TextField()
+    timestamp = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Review for {self.reviewed_user} by {self.reviewer}"
+
+    class Meta:
+        unique_together = ('reviewed_user', 'reviewer')
+
+
+
+
+class UserProjectCollaboration(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    project = models.ForeignKey(Project, on_delete=models.CASCADE)
+    message = models.TextField()
+    timestamp = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Collaboration request from {self.user} for {self.project}"

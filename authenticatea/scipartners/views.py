@@ -1,12 +1,14 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.forms import UserCreationForm, PasswordChangeForm, PasswordChangeForm, UserChangeForm,
-from .models import Project, Message, UserProfile, Notification, Feedback, User, UserProfile, ProjectTag, Skill, Interest, UserProjectCollaboration
-from .forms import UserProfileForm, ProjectCreationForm, MessageForm, FeedbackForm,PrivacySettingsForm, ProjectTagForm, ProjectEditForm, UserProjectCollaborationForm
+from django.contrib.auth.forms import UserCreationForm, PasswordChangeForm, PasswordChangeForm, UserChangeForm
+from .models import Project, Message, UserProfile, Notification, Feedback, User, UserProfile, ProjectTag, Skill, Interest, UserReview, UserProjectCollaboration
+from .forms import UserProfileForm, ProjectCreationForm, MessageForm, FeedbackForm,PrivacySettingsForm, ProjectTagForm, ProjectEditForm, UserProjectCollaborationForm, UserReviewForm
 from django.contrib import messages
+from notifications.signals import notify
+from django.http import HttpResponseForbidden, HttpResponse
 from django.contrib.auth import  update_session_auth_hash
-
+from notifications.models import Notification
 
 def login_view(request):
     if request.method == 'POST':
@@ -55,7 +57,7 @@ def logout_view(request):
     messages.success(request, 'You have been logged out.')
     return redirect('login')  # Redirect to the login page after logging out
 
-
+@login_required
 def create_project_view(request):
     if request.method == 'POST':
         form = ProjectCreationForm(request.POST)
@@ -71,7 +73,7 @@ def create_project_view(request):
 
 
 
-
+@login_required
 def send_message_view(request, receiver_id):
     receiver = User.objects.get(id=receiver_id)
     if request.method == 'POST':
@@ -88,8 +90,6 @@ def send_message_view(request, receiver_id):
     return render(request, 'messaging/send_message.html', {'form': form, 'receiver': receiver})
 
 
-from django.shortcuts import render
-from .models import UserProfile
 
 def user_profile_view(request, user_id):
     user_profile = UserProfile.objects.get(user_id=user_id)
@@ -126,7 +126,7 @@ def feedback_view(request, project_id):
     
     return render(request, 'project/feedback.html', {'form': form})
 
-
+@login_required
 def privacy_settings_view(request):
     user_profile = UserProfile.objects.get(user=request.user)
     
@@ -140,6 +140,7 @@ def privacy_settings_view(request):
     
     return render(request, 'profile/privacy_settings.html', {'form': form})
 
+@login_required
 def add_project_tag_view(request, project_id):
     project = Project.objects.get(id=project_id)
     
@@ -189,7 +190,7 @@ def project_details_view(request, project_id):
 
 
 
-
+@login_required
 def search_projects_view(request):
     if request.method == 'GET':
         skills = Skill.objects.all()
@@ -211,12 +212,13 @@ def search_projects_view(request):
         # Handle other HTTP methods as needed
         pass
 
-
+@login_required
 def inbox_view(request):
     user = request.user
     user_messages = Message.objects.filter(receiver=user).order_by('-timestamp')
     return render(request, 'messaging/inbox.html', {'user_messages': user_messages})
 
+@login_required
 def user_settings_view(request):
     if request.method == 'POST':
         user_form = UserChangeForm(request.POST, instance=request.user)
@@ -245,14 +247,18 @@ def account_deactivated_view(request):
     return render(request, 'profile/account_deactivated.html')
 
 
-
+@login_required
 def edit_project_view(request, project_id):
-    project = Project.objects.get(id=project_id)
-    
+    try:
+        project = Project.objects.get(id=project_id)
+    except Project.DoesNotExist:
+        # Handle the case where the project with the given ID doesn't exist
+        return HttpResponse("Project not found", status=404)
+
     if request.user != project.creator:
-        # Implement appropriate permissions and error handling for unauthorized users
-        return redirect('project_details', project_id=project_id)
-    
+        # If the user is not the project creator, return a forbidden response
+        return HttpResponseForbidden("You do not have permission to edit this project.")
+
     if request.method == 'POST':
         form = ProjectEditForm(request.POST, instance=project)
         if form.is_valid():
@@ -260,10 +266,10 @@ def edit_project_view(request, project_id):
             return redirect('project_details', project_id=project_id)
     else:
         form = ProjectEditForm(instance=project)
-    
+
     return render(request, 'project/edit.html', {'form': form, 'project': project})
 
-
+@login_required
 def collaborate_on_project_view(request, project_id):
     project = Project.objects.get(id=project_id)
     
@@ -282,20 +288,23 @@ def collaborate_on_project_view(request, project_id):
 
 
 
+@login_required
 def deactivate_project_view(request, project_id):
-    project = Project.objects.get(id=project_id)
-    
+    # Get the project or return a 404 response if it doesn't exist
+    project = get_object_or_404(Project, id=project_id)
+
     if request.user != project.creator:
-        # Implement appropriate permissions and error handling for unauthorized users
-        return redirect('project_details', project_id=project_id)
-    
+        # If the user is not the project creator, return a forbidden response
+        return HttpResponseForbidden("You do not have permission to deactivate this project.")
+
     if request.method == 'POST':
         # Handle project deactivation logic here
-        # Optionally, ask the project creator for confirmation
+        # For example, set project.active = False or delete the project
+        project.active = False
+        project.save()
         return redirect('project_deactivated')  # Redirect to a confirmation page
-    else:
-        return render(request, 'project/deactivate.html', {'project': project})
-    
+
+    return render(request, 'project/deactivate.html', {'project': project})
 
 
 @login_required
@@ -317,18 +326,18 @@ def collaborate_on_project_view(request, project_id):
 
 
 def deactivate_project_view(request, project_id):
-    project = Project.objects.get(id=project_id)
+    # Get the project or return a 404 response if it doesn't exist
+    project = get_object_or_404(Project, id=project_id)
     
     if request.user != project.creator:
         # Implement appropriate permissions and error handling for unauthorized users
         return redirect('project_details', project_id=project_id)
     
     if request.method == 'POST':
-        # Handle project deactivation logic here
-        # Optionally, ask the project creator for confirmation
-        return redirect('project_deactivated')  # Redirect to a confirmation page
-    else:
-        return render(request, 'project/deactivate.html', {'project': project})
+        # diplay a confirmation page with a form for the project creator
+        return render(request, 'project/confirm_deactivation.html', {'project': project})
+    
+    return render(request, 'project/deactivate.html', {'project': project})
     
 
 
@@ -338,8 +347,6 @@ def deactivate_account_view(request):
         # Verify the user's password for confirmation
         password_form = PasswordChangeForm(user=request.user, data=request.POST)
         if password_form.is_valid():
-            # Handle account deactivation logic here
-            # Optionally, you can ask the user for further confirmation
             return redirect('account_deactivated')  # Redirect to a confirmation page
     else:
         password_form = PasswordChangeForm(user=request.user)
@@ -347,3 +354,19 @@ def deactivate_account_view(request):
     return render(request, 'profile/deactivate_account.html', {'password_form': password_form})
 
 
+def new_project_opportunity(request):
+    # ... logic to create a new project opportunity ...
+    notify.send(request.user, recipient=request.user, verb='New project opportunity available!')
+
+def new_message(request, recipient_user):
+    # ... logic to create a new message ...
+    recipient = User.objects.get(username=recipient_user)
+    notify.send(request.user, recipient=recipient, verb='You have a new message!')
+
+
+@login_required
+def user_dashboard(request):
+    user_notifications = Notification.objects.filter(recipient=request.user).order_by('-timestamp')
+    user_profile = UserProfile.objects.get(user=request.user)
+    
+    return render(request, 'user_dashboard.html', {'user_notifications': user_notifications, 'user_profile': user_profile})
