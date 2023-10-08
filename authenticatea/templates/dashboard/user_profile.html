@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <h2>User Profile: {{ user.username }}</h2>
+  
+  <h3>Reviews</h3>
+  <ul>
+    {% for review in user_reviews %}
+      <li>
+        <p>Rating: {{ review.rating }}</p>
+        <p>Comment: {{ review.comment }}</p>
+        <p>Reviewer: {{ review.reviewer.username }}</p>
+      </li>
+    {% endfor %}
+  </ul>
+  
+  <!-- Other user profile details here -->
+{% endblock %}

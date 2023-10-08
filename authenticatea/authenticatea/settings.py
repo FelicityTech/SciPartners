@@ -35,6 +35,7 @@ INSTALLED_APPS = [
     # 'allauth.socialaccount.providers.facebook',
     'allauth.socialaccount.providers.github',
     # 'allauth.socialaccount.providers.twitter',
+    'notifications'
 
     'scipartners',
 ]
@@ -50,8 +51,8 @@ MIDDLEWARE = [
     'allauth.account.middleware.AccountMiddleware',
 
 
-    
-    
+
+
 ]
 
 ROOT_URLCONF = 'scipartners.urls'
@@ -68,7 +69,7 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
                 'django.template.context_processors.request',
-                
+
             ],
         },
     },
@@ -139,7 +140,7 @@ AUTHENTICATION_BACKENDS = [
 # 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
 
 
-# github 
+# github
 # caab5ae8267215a570f5b
 # cf35245b0169951280791fac4ad3965830098af9
 SOCIALACCOUNT_PROVIDERS = {
@@ -152,8 +153,20 @@ SOCIALACCOUNT_PROVIDERS = {
             'access_type': 'online',
         },
         'OAUTH_PKCE_ENABLED': True,
+    },
+    'github': {
+        'SCOPE': [
+            'profile',
+            'email',
+        ],
+        'AUTH_PARAMS': {
+            'access_type': 'online',
+        },
+        'OAUTH_PKCE_ENABLED': True,
     }
 }
+
+NOTIFICATIONS_USE_JSONFIELD = True
 LANGUAGE_CODE = 'en-us'
 
 TIME_ZONE = 'UTC'
@@ -167,18 +180,17 @@ USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.2/howto/static-files/
-import os
 STATIC_URL = '/static/'
 
-STATICFILES_DIRS=[
-    os.path.join(BASE_DIR,'static')
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'static')
 ]
 
-MEDIA_URL ='/media/'
-MEDIA_ROOT =os.path.join(BASE_DIR,"media")
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 
 MEDIA_URL = '/media/'
-MEDIA_ROOT=os.path.join(BASE_DIR, "media")
+MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
@@ -194,5 +206,5 @@ SOCIALACCOUNT_QUERY_EMAIL = True
 ACCOUNT_SESSION_REMEMBER = True
 
 MESSAGE_TAGS = {
-    messages.ERROR:'danger'
+    messages.ERROR: 'danger'
 }

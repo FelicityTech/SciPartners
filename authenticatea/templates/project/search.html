@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-md-4">
+            <h2>Filter by Skill</h2>
+            <form method="get" action="{% url 'search_projects' %}">
+                <select name="skill">
+                    <option value="">Select a skill</option>
+                    {% for skill in skills %}
+                        <option value="{{ skill.id }}">{{ skill.name }}</option>
+                    {% endfor %}
+                </select>
+                <button type="submit" class="btn btn-primary">Filter</button>
+            </form>
+        </div>
+        <div class="col-md-4">
+            <h2>Filter by Interest</h2>
+            <form method="get" action="{% url 'search_projects' %}">
+                <select name="interest">
+                    <option value="">Select an interest</option>
+                    {% for interest in interests %}
+                        <option value="{{ interest.id }}">{{ interest.name }}</option>
+                    {% endfor %}
+                </select>
+                <button type="submit" class="btn btn-primary">Filter</button>
+            </form>
+        </div>
+    </div>
+    <div class="row mt-4">
+        <div class="col-md-12">
+            <h2>Search Results</h2>
+            <ul>
+                {% for project in projects %}
+                    <li><a href="{% url 'project_details' project.id %}">{{ project.name }}</a></li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+</div>
+{% endblock %}

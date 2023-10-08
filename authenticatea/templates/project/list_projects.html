@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <h2>Project Listings</h2>
+  
+  <form method="get">
+    <label for="skill">Filter by Skill:</label>
+    <select name="skill" id="skill">
+      <option value="">All</option>
+      {% for skill in skills %}
+        <option value="{{ skill.id }}">{{ skill.name }}</option>
+      {% endfor %}
+    </select>
+    <button type="submit">Filter</button>
+  </form>
+  
+  <ul>
+    {% for project in projects %}
+      <li>
+        <h3>{{ project.name }}</h3>
+        <p>{{ project.description }}</p>
+        <p>Goals: {{ project.goals }}</p>
+        <p>Required Skills: {{ project.required_skills.all|join:", " }}</p>
+        <p>Expected Scope: {{ project.expected_scope }}</p>
+        <p>Creator: {{ project.creator.username }}</p>
+      </li>
+    {% endfor %}
+  </ul>
+{% endblock %}

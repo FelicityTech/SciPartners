@@ -10,4 +10,4 @@ urlpatterns = [
     path('home/', TemplateView.as_view(template_name='dashboard/home.html'), name='home'),
     path('accounts/', include('allauth.urls')),
     path('', include("scipartners.urls")),
-] + static(settings.MEDIA_URL, document_root=setting.MEDIA_ROOT)
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h2>Deactivate Your Account</h2>
+                </div>
+                <div class="card-body">
+                    <p class="text-danger">Warning: Deactivating your account will permanently delete your profile and associated data.</p>
+                    <p>If you are sure you want to proceed with deactivation, please enter your password for confirmation:</p>
+                    <form method="post">
+                        {% csrf_token %}
+                        <div class="form-group">
+                            <label for="password">Password:</label>
+                            <input type="password" class="form-control" id="password" name="password" required>
+                        </div>
+                        <button type="submit" class="btn btn-danger">Deactivate Account</button>
+                    </form>
+                    <p class="mt-3">
+                        <a href="{% url 'user_dashboard' %}" class="btn btn-secondary">Cancel</a>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

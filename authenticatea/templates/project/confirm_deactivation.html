@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Confirm Project Deactivation</title>
+</head>
+<body>
+    <h1>Confirm Project Deactivation</h1>
+    <p>Are you sure you want to deactivate the project "{{ project.title }}"?</p>
+    <form method="post">
+        {% csrf_token %}
+        <input type="submit" value="Confirm Deactivation">
+    </form>
+</body>
+</html>

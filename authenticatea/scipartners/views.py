@@ -171,6 +171,23 @@ def dashboard_view(request):
     })
 
 
+@login_required
+def change_password_view(request):
+    if request.method == 'POST':
+        password_form = PasswordChangeForm(request.user, request.POST)
+        if password_form.is_valid():
+            user = password_form.save()
+            update_session_auth_hash(request, user)  # Update the user's session to prevent them from being logged out
+            messages.success(request, 'Your password has been successfully changed.')
+            return redirect('user_settings')  # Redirect to user settings or dashboard
+        else:
+            messages.error(request, 'Please correct the errors below.')
+
+    else:
+        password_form = PasswordChangeForm(request.user)
+
+    return render(request, 'profile/change_password.html', {'password_form': password_form})
+
 def project_details_view(request, project_id):
     project = Project.objects.get(id=project_id)
     user_feedback = Feedback.objects.filter(user=request.user, project=project).first()
@@ -225,7 +242,10 @@ def user_settings_view(request):
         if user_form.is_valid():
             user_form.save()
             update_session_auth_hash(request, request.user)  # Keep user logged in after password change
+            messages.success(request, 'Password changed successfully.')
             return redirect('user_settings')  # Redirect back to settings page
+        else:
+            messages.error(request, 'Password change failed. Please correct the errors.')
     else:
         user_form = UserChangeForm(instance=request.user)
     
@@ -267,7 +287,7 @@ def edit_project_view(request, project_id):
     else:
         form = ProjectEditForm(instance=project)
 
-    return render(request, 'project/edit.html', {'form': form, 'project': project})
+    return render(request, 'project/project_edit.html', {'form': form, 'project': project})
 
 @login_required
 def collaborate_on_project_view(request, project_id):
@@ -298,8 +318,6 @@ def deactivate_project_view(request, project_id):
         return HttpResponseForbidden("You do not have permission to deactivate this project.")
 
     if request.method == 'POST':
-        # Handle project deactivation logic here
-        # For example, set project.active = False or delete the project
         project.active = False
         project.save()
         return redirect('project_deactivated')  # Redirect to a confirmation page

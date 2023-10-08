@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <h2>User Dashboard</h2>
+  
+  <h3>Notifications</h3>
+  <ul>
+    {% for notification in user_notifications %}
+      <li>
+        <p>{{ notification.verb }}</p>
+        <p>Timestamp: {{ notification.timestamp }}</p>
+      </li>
+    {% endfor %}
+  </ul>
+  
+  <!-- Other user dashboard/profile details here -->
+{% endblock %}
