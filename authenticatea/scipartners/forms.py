@@ -1,6 +1,6 @@
 # forms.py
 from django import forms
-from .models import Project, UserProfile, Message, Feedback, UserProfile, ProjectTag, UserProjectCollaboration, UserReview
+from .models import Project, UserProfile, Message, Feedback, ProjectTag, UserProjectCollaboration, UserReview
 
 
 
@@ -20,7 +20,7 @@ class UserProfileForm(forms.ModelForm):
 class ProjectCreationForm(forms.ModelForm):
     class Meta:
         model = Project
-        fields = ['title', 'description', 'required_skills', 'interests', 'scope']
+        fields = ['project_name', 'description', 'required_skills', 'interests', 'scope']
 
     # custom fields
     description = forms.CharField(
@@ -53,7 +53,7 @@ class FeedbackForm(forms.ModelForm):
 class PrivacySettingsForm(forms.ModelForm):
     class Meta:
         model = UserProfile
-        fields = ['is_public', 'show_location', 'show_skills', 'show_interests']
+        fields = ['location', 'skills', 'interests']
 
     is_public = forms.BooleanField(
         widget=forms.CheckboxInput(attrs={'class': 'form-check-input'}),
@@ -74,7 +74,7 @@ class ProjectTagForm(forms.ModelForm):
 class ProjectEditForm(forms.ModelForm):
     class Meta:
         model = Project
-        fields = ['title', 'description', 'required_skills', 'interests', 'scope']
+        fields = ['project_name', 'description', 'required_skills', 'interests', 'scope']
 
     description = forms.CharField(
         widget=forms.Textarea(attrs={'rows': 4, 'placeholder': 'Enter project description...'})

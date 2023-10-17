@@ -2,8 +2,8 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import UserCreationForm, PasswordChangeForm, PasswordChangeForm, UserChangeForm
-from .models import Project, Message, UserProfile, Notification, Feedback, User, UserProfile, ProjectTag, Skill, Interest, UserReview, UserProjectCollaboration
-from .forms import UserProfileForm, ProjectCreationForm, MessageForm, FeedbackForm,PrivacySettingsForm, ProjectTagForm, ProjectEditForm, UserProjectCollaborationForm, UserReviewForm
+from .models import Project, Message, UserProfile, Notification, Feedback, User, UserProfile, Skill, Interest
+from .forms import UserProfileForm, ProjectCreationForm, MessageForm, FeedbackForm,PrivacySettingsForm, ProjectTagForm, ProjectEditForm, UserProjectCollaborationForm
 from django.contrib import messages
 from notifications.signals import notify
 from django.http import HttpResponseForbidden, HttpResponse

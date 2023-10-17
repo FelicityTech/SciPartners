@@ -1,26 +1,25 @@
 {% extends 'account/base.html' %}
 {% block title %}Home{% endblock title %}
-{% comment %} {% load static %}
+{% load static %}
 {% block content %}
-    <div class="text-center">
-        <h2>Home</h2>
+    <div class="text-center  alert alert-info" data-toggle="collapse">
         <p>Hello {{ user.first_name }}!</p>
         <p>Your Username : {{ user }}</p>
         <a class="btn btn-dark" href="{% url 'socialaccount_connections' %}">Settings</a>
     </div>
-{% endblock %}
+{% endblock content %}
 
-{% endcomment %}
 {% block body %}
-{% load static %}
 
   <!-- ======= Hero Section ======= -->
   <section id="hero">
     <div class="hero-container" data-aos="fade-in">
-      <h1>Welcome to eStartup</h1>
-      <h2>Elegant Bootstrap Template for Startups, Apps &amp; more...</h2>
-      <img src="{% static 'assets/img/hero-img.png' %}" alt="Hero Imgs" data-aos="zoom-out" data-aos-delay="100">
-      <a href="#get-started" class="btn-get-started scrollto">Get Started</a>
+      <h1>Welcome to SciPartners</h1>
+      <h2>OpenSci Connect is dedicated to the principles of open-source science, and our platform aims to make collaboration and knowledge sharing more accessible than ever. Join us in building a more inclusive and innovative open science community.
+
+</h2>
+      <img src="{% static 'assets/img/hero-img.jpg' %}" alt="Hero Imgs" data-aos="zoom-out" data-aos-delay="100">
+      <a href="#get-started" class="btn-get-started scrollto">Welcome</a>
       <div class="btns">
         <a href="#"><i class="fa fa-apple fa-3x"></i> App Store</a>
         <a href="#"><i class="fa fa-play fa-3x"></i> Google Play</a>
@@ -95,7 +94,7 @@
           <div class="col-md-7 col-lg-5">
             <div class="about-content" data-aos="fade-left" data-aos-delay="100">
 
-              <h2><span>eStartup</span>UI Design Mobile </h2>
+              <h2><span>SciPartners</span>UI Design Mobile </h2>
               <p>Consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat
               </p>
 

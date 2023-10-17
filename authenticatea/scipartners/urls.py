@@ -1,7 +1,15 @@
-from django.urls import path
+from django.contrib import admin
+from django.urls import path, include
 from scipartners import views
+from django.conf.urls.static import static
+from django.conf import settings
+from django.views.generic import TemplateView
 
 urlpatterns = [
+
+    path('admin/', admin.site.urls),
+    path('home/', TemplateView.as_view(template_name='dashboard/home.html'), name='home'),
+    path('accounts/', include('allauth.urls')),
     path('login/', views.login_view, name='login'),
     path('register/', views.register_view, name='register'),
     path('profile/', views.profile_view, name='profile'),
@@ -14,7 +22,7 @@ urlpatterns = [
     path('feedback/<int:project_id>/', views.feedback_view, name='feedback'),
     path('privacy_settings/', views.privacy_settings_view, name='privacy_settings'),
     path('add_project_tag/<int:project_id>/', views.add_project_tag_view, name='add_project_tag'),
-    path('dashboard/', views.dashboard_view, name='dashboard'),
+    path('user_dashboard/', views.dashboard_view, name='dashboard'),
     path('project_details/<int:project_id>/', views.project_details_view, name='project_details'),
     path('search_projects/', views.search_projects_view, name='search_projects'),
     path('inbox/', views.inbox_view, name='inbox'),
@@ -26,9 +34,9 @@ urlpatterns = [
     path('deactivate_project/<int:project_id>/', views.deactivate_project_view, name='deactivate_project'),
     path('new_project_opportunity/', views.new_project_opportunity, name='new_project_opportunity'),
     path('new_message/<str:recipient_user>/', views.new_message, name='new_message'),
-    path('user_profile/<int:user_id>/', views.user_profile, name='user_profile'),
-    path('collaborate_on_project/<int:project_id>/', views.collaborate_on_project, name='collaborate_on_project'),
+    path('user_profile/<int:user_id>/', views.UserProfile, name='user_profile'),
+    path('collaborate_on_project/<int:project_id>/', views.collaborate_on_project_view, name='collaborate_on_project'),
     path('deactivate_project/<int:project_id>/', views.deactivate_project_view, name='deactivate_project'),
 
     
-]
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

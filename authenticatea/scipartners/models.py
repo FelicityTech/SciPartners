@@ -11,17 +11,27 @@ class UserProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     skills = models.ManyToManyField(Skill)
     profile_image = models.ImageField(upload_to='profile_images/', blank=True, null=True)
+    location = models.CharField(max_length=100)
+    bio = models.CharField(max_length=250)    
+    website = models.URLField(blank=True, null=True)
     interests = models.ManyToManyField(Interest)
-
+    location = models.TextField()
+ 
 class Project(models.Model):
+    STATUS_CHOICES = (
+        ('active', 'Active'),
+        ('inactive', 'Inactive'),
+    )
+
     project_name = models.CharField(max_length=255)
     description = models.TextField()
     creator = models.ForeignKey(User, on_delete=models.CASCADE)
-    required_skill = models.ForeignKey(Skill, on_delete=models.CASCADE)
-    interest = models.ForeignKey(Interest, on_delete=models.CASCADE)
+    required_skills = models.ForeignKey(Skill, on_delete=models.CASCADE)
+    interests = models.ForeignKey(Interest, on_delete=models.CASCADE)
     start_date = models.DateField()
     end_date = models.DateField()
-    status = models.CharField(max_length=20)
+    status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='active')
+    scope = models.TextField()
 
 
 class ProjectTag(models.Model):
